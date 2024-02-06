@@ -7,7 +7,7 @@ import (
 	"io"
 )
 
-var str = "passutaskufjdksl"
+var str = "passutaskufjdksL"
 var bytes = []byte(str)
 
 func Encrypt(plaintext []byte) []byte {
