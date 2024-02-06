@@ -4,23 +4,23 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type passwordEntry struct {
+type PasswordEntry struct {
 	Service  string
 	Username string
 	Password string
 }
 
-type model struct {
-	Passwords []passwordEntry
+type Model struct {
+	Passwords []PasswordEntry
 }
 
 // Init method for the model
-func (m model) Init() tea.Cmd {
+func (m Model) Init() tea.Cmd {
 	return tea.SetWindowTitle("Passu Tasku")
 }
 
 // Update method for the model
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -32,7 +32,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 // View method for the model
-func (m model) View() string {
+func (m Model) View() string {
 	s := "Your passwords:\n\n"
 
 	for _, p := range m.Passwords {
