@@ -1,8 +1,8 @@
-package manager
+package models
 
 // New model for testing the app
-func TestModel() Model {
-	return Model{
+func TestModel() ShowPasswordsModel {
+	return ShowPasswordsModel{
 		Passwords: []PasswordEntry{
 			{Service: "Twitter", Username: "user1", Password: "password1"},
 			{Service: "Facebook", Username: "user2", Password: "password2"},

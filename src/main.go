@@ -8,6 +8,7 @@ import (
 	"github.com/playjeri/passutasku/src/utils"
 
 	tea "github.com/charmbracelet/bubbletea"
+	m "github.com/playjeri/passutasku/src/manager/models"
 )
 
 func main() {
@@ -15,12 +16,19 @@ func main() {
 	utils.ClearTerminal()
 
 	data := manager.LoadFile()
-	model := manager.Model{Passwords: data}
-	if len(model.Passwords) == 0 {
-		model = manager.TestModel()
+	model := m.MainModel{
+		State: m.ShowPasswords,
+		ShowPasswordsModel: m.ShowPasswordsModel{
+			Passwords: data,
+		},
+		AddPasswordModel: m.NewModel(),
 	}
 
-	defer manager.SaveFile(model.Passwords)
+	if model.ShowPasswordsModel.Passwords == nil {
+		model.ShowPasswordsModel = m.TestModel()
+	}
+
+	defer manager.SaveFile(model.ShowPasswordsModel.Passwords)
 
 	p := tea.NewProgram(model)
 	if _, err := p.Run(); err != nil {
