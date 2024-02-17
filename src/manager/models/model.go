@@ -29,6 +29,11 @@ func (m MainModel) Init() tea.Cmd {
 
 // Update method for the model
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch m.State {
+	case AddPassword:
+		return m.AddPasswordModel.Update(msg)
+	}
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
