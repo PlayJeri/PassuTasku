@@ -18,14 +18,14 @@ func SaveFile(passwords []m.PasswordEntry) {
 
 	fmt.Println("Saving data to file")
 
-	err = os.WriteFile("data.txt", dataEncrypted, 0644)
+	err = os.WriteFile(".data.txt", dataEncrypted, 0644)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func LoadFile() []m.PasswordEntry {
-	dataEncrypted, err := os.ReadFile("data.txt")
+	dataEncrypted, err := os.ReadFile(".data.txt")
 	if err != nil {
 		return []m.PasswordEntry{}
 	}
@@ -39,4 +39,12 @@ func LoadFile() []m.PasswordEntry {
 	}
 
 	return passwords
+}
+
+func OpenLogFile() *os.File {
+	file, err := os.OpenFile("log.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		panic(err)
+	}
+	return file
 }
