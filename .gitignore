@@ -2,3 +2,5 @@
 .DS_Store
 main
 data.txt
+.data.txt
+log.txt
