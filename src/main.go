@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/playjeri/passutasku/src/manager"
@@ -15,6 +16,10 @@ func main() {
 	defer utils.ClearTerminal()
 	utils.ClearTerminal()
 
+	file := manager.OpenLogFile()
+	log.SetOutput(file)
+	defer file.Close()
+
 	data := manager.LoadFile()
 	model := m.MainModel{
 		State: m.ShowPasswords,
@@ -23,12 +28,12 @@ func main() {
 		},
 		AddPasswordModel: m.NewModel(),
 	}
+	defer manager.SaveFile(model.ShowPasswordsModel.Passwords)
 
-	if model.ShowPasswordsModel.Passwords == nil {
+	if len(model.ShowPasswordsModel.Passwords) == 0 {
+		log.Println("No passwords found in the file")
 		model.ShowPasswordsModel = m.TestModel()
 	}
-
-	defer manager.SaveFile(model.ShowPasswordsModel.Passwords)
 
 	p := tea.NewProgram(model)
 	if _, err := p.Run(); err != nil {
