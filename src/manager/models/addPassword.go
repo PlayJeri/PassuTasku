@@ -1,29 +1,38 @@
 package models
 
 import (
-	"fmt"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 )
 
 type AddPasswordModel struct {
-	form *huh.Form // huh.Form is just a teaFormModel.
+	form *huh.Form // huh.Form is just a tea.Model
 }
 
 func NewModel() AddPasswordModel {
+
+	var service string
+	var username string
+	var password string
+
 	return AddPasswordModel{
 		form: huh.NewForm(
 			huh.NewGroup(
-				huh.NewSelect[string]().
-					Key("class").
-					Options(huh.NewOptions("Warrior", "Mage", "Rogue")...).
-					Title("Choose your class"),
+				huh.NewInput().
+					Title("Service").
+					Value(&service).
+					Prompt("?"),
 
-				huh.NewSelect[int]().
-					Key("level").
-					Options(huh.NewOptions(1, 20, 9999)...).
-					Title("Choose your level"),
+				huh.NewInput().
+					Title("Username").
+					Value(&username).
+					Prompt("?"),
+
+				huh.NewInput().
+					Title("password").
+					Password(true).
+					Value(&password).
+					Prompt("?"),
 			),
 		),
 	}
@@ -34,21 +43,31 @@ func (m AddPasswordModel) Init() tea.Cmd {
 }
 
 func (m AddPasswordModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	// ...
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "esc", "ctrl+c", "q":
+			return m, tea.Quit
+		}
+	}
 
+	var cmds []tea.Cmd
+
+	// Process the form
 	form, cmd := m.form.Update(msg)
 	if f, ok := form.(*huh.Form); ok {
 		m.form = f
+		cmds = append(cmds, cmd)
 	}
 
-	return m, cmd
+	if m.form.State == huh.StateCompleted {
+		// Quit when the form is done.
+		cmds = append(cmds, tea.Quit)
+	}
+
+	return m, tea.Batch(cmds...)
 }
 
 func (m AddPasswordModel) View() string {
-	if m.form.State == huh.StateCompleted {
-		class := m.form.GetString("class")
-		level := m.form.GetString("level")
-		return fmt.Sprintf("You selected: %s, Lvl. %s", class, level)
-	}
 	return m.form.View()
 }
