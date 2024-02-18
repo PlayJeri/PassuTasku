@@ -1,6 +1,8 @@
 package models
 
 import (
+	"log"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -26,6 +28,8 @@ func (m MainModel) Init() tea.Cmd {
 // Update method for the model
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
+	var juttu = msg
+	log.Println(juttu)
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:

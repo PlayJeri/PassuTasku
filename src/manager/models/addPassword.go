@@ -1,6 +1,8 @@
 package models
 
 import (
+	"log"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 )
@@ -44,6 +46,7 @@ func (m AddPasswordModel) Init() tea.Cmd {
 
 func (m AddPasswordModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
+	log.Println(msg)
 
 	// Process the form
 	form, cmd := m.form.Update(msg)
