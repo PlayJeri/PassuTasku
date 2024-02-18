@@ -21,21 +21,23 @@ func main() {
 	defer file.Close()
 
 	data := manager.LoadFile()
-	model := m.MainModel{
+	MainModel := m.MainModel{
 		State: m.ShowPasswords,
 		ShowPasswordsModel: m.ShowPasswordsModel{
 			Passwords: data,
 		},
 		AddPasswordModel: m.NewModel(),
 	}
-	defer manager.SaveFile(model.ShowPasswordsModel.Passwords)
+	defer log.Println(MainModel.ShowPasswordsModel.Passwords)
 
-	if len(model.ShowPasswordsModel.Passwords) == 0 {
+	defer manager.SaveFile(MainModel.ShowPasswordsModel.Passwords)
+
+	if len(MainModel.ShowPasswordsModel.Passwords) == 0 {
 		log.Println("No passwords found in the file")
-		model.ShowPasswordsModel = m.TestModel()
+		MainModel.ShowPasswordsModel = m.TestModel()
 	}
 
-	p := tea.NewProgram(model)
+	p := tea.NewProgram(MainModel)
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)

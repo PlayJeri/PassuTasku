@@ -43,14 +43,6 @@ func (m AddPasswordModel) Init() tea.Cmd {
 }
 
 func (m AddPasswordModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "esc", "ctrl+c", "q":
-			return m, tea.Quit
-		}
-	}
-
 	var cmds []tea.Cmd
 
 	// Process the form
