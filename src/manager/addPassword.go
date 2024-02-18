@@ -1,20 +1,23 @@
-package models
+package manager
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 )
 
+type NewPasswordMessage struct {
+	entry PasswordEntry
+}
+
 type AddPasswordModel struct {
 	form *huh.Form // huh.Form is just a tea.Model
 }
 
+var service string
+var username string
+var password string
+
 func NewModel() AddPasswordModel {
-
-	var service string
-	var username string
-	var password string
-
 	return AddPasswordModel{
 		form: huh.NewForm(
 			huh.NewGroup(
@@ -43,14 +46,6 @@ func (m AddPasswordModel) Init() tea.Cmd {
 }
 
 func (m AddPasswordModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "esc", "ctrl+c", "q":
-			return m, tea.Quit
-		}
-	}
-
 	var cmds []tea.Cmd
 
 	// Process the form
@@ -62,7 +57,13 @@ func (m AddPasswordModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	if m.form.State == huh.StateCompleted {
 		// Quit when the form is done.
-		cmds = append(cmds, tea.Quit)
+		return m, func() tea.Msg {
+			return NewPasswordMessage{entry: PasswordEntry{
+				Service:  service,
+				Username: username,
+				Password: password,
+			}}
+		}
 	}
 
 	return m, tea.Batch(cmds...)

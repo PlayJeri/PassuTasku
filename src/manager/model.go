@@ -1,4 +1,4 @@
-package models
+package manager
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
@@ -18,10 +18,6 @@ type MainModel struct {
 	Width, Height      int
 }
 
-func (m ShowPasswordsModel) Init() tea.Cmd {
-	return tea.SetWindowTitle("PassuTasku")
-}
-
 // Init method for the model
 func (m MainModel) Init() tea.Cmd {
 	return tea.Batch(m.ShowPasswordsModel.Init(), m.AddPasswordModel.Init())
@@ -29,24 +25,35 @@ func (m MainModel) Init() tea.Cmd {
 
 // Update method for the model
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch m.State {
-	case AddPassword:
-		return m.AddPasswordModel.Update(msg)
-	}
+	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "q":
-			return m, tea.Quit
-		case "a":
+		case "1":
+			m.State = ShowPasswords
+		case "2":
 			m.State = AddPassword
-
+		case "esc", "ctrl+c":
+			return m, tea.Quit
 		}
-	case tea.WindowSizeMsg:
-		m.Width, m.Height = msg.Width, msg.Height
+	case NewPasswordMessage:
+		m.ShowPasswordsModel.Passwords = append(m.ShowPasswordsModel.Passwords, msg.entry)
+		SaveFile(m.ShowPasswordsModel.Passwords)
+		m.State = ShowPasswords
 	}
-	return m, nil
+	switch m.State {
+	case ShowPasswords:
+		var updatedModel tea.Model
+		updatedModel, cmd = m.ShowPasswordsModel.Update(msg)
+		m.ShowPasswordsModel = updatedModel.(ShowPasswordsModel)
+	case AddPassword:
+		var updatedModel tea.Model
+		updatedModel, cmd = m.AddPasswordModel.Update(msg)
+		m.AddPasswordModel = updatedModel.(AddPasswordModel)
+	}
+
+	return m, cmd
 }
 
 // View method for the model
@@ -57,6 +64,5 @@ func (m MainModel) View() string {
 	case ShowPasswords:
 		return m.ShowPasswordsModel.View()
 	}
-
-	panic("unknown state")
+	return "Press 1 or 2 to switch views"
 }

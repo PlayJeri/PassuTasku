@@ -2,13 +2,11 @@ package manager
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"os"
-
-	m "github.com/playjeri/passutasku/src/manager/models"
 )
 
-func SaveFile(passwords []m.PasswordEntry) {
+func SaveFile(passwords []PasswordEntry) {
 	data, err := json.Marshal(passwords)
 	if err != nil {
 		panic(err)
@@ -16,7 +14,7 @@ func SaveFile(passwords []m.PasswordEntry) {
 
 	dataEncrypted := Encrypt(data)
 
-	fmt.Println("Saving data to file")
+	log.Printf("Saving %d passwords", len(passwords))
 
 	err = os.WriteFile(".data.txt", dataEncrypted, 0644)
 	if err != nil {
@@ -24,15 +22,15 @@ func SaveFile(passwords []m.PasswordEntry) {
 	}
 }
 
-func LoadFile() []m.PasswordEntry {
+func LoadFile() []PasswordEntry {
 	dataEncrypted, err := os.ReadFile(".data.txt")
 	if err != nil {
-		return []m.PasswordEntry{}
+		return []PasswordEntry{}
 	}
 
 	data := Decrypt(dataEncrypted)
 
-	var passwords []m.PasswordEntry
+	var passwords []PasswordEntry
 	err = json.Unmarshal(data, &passwords)
 	if err != nil {
 		panic(err)

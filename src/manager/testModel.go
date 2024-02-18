@@ -1,4 +1,4 @@
-package models
+package manager
 
 // New model for testing the app
 func TestModel() ShowPasswordsModel {

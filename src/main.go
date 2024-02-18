@@ -1,43 +1,43 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
-	"github.com/playjeri/passutasku/src/manager"
+	m "github.com/playjeri/passutasku/src/manager"
 	"github.com/playjeri/passutasku/src/utils"
 
 	tea "github.com/charmbracelet/bubbletea"
-	m "github.com/playjeri/passutasku/src/manager/models"
 )
 
 func main() {
 	defer utils.ClearTerminal()
 	utils.ClearTerminal()
 
-	file := manager.OpenLogFile()
+	file := m.OpenLogFile()
 	log.SetOutput(file)
-	defer file.Close()
 
-	data := manager.LoadFile()
-	model := m.MainModel{
+	data := m.LoadFile()
+	MainModel := m.MainModel{
 		State: m.ShowPasswords,
 		ShowPasswordsModel: m.ShowPasswordsModel{
 			Passwords: data,
 		},
 		AddPasswordModel: m.NewModel(),
 	}
-	defer manager.SaveFile(model.ShowPasswordsModel.Passwords)
 
-	if len(model.ShowPasswordsModel.Passwords) == 0 {
-		log.Println("No passwords found in the file")
-		model.ShowPasswordsModel = m.TestModel()
+	if len(MainModel.ShowPasswordsModel.Passwords) == 0 {
+		os.Exit(1)
+		MainModel.ShowPasswordsModel.Passwords = []m.PasswordEntry{
+			{Service: "Twitter", Username: "user1", Password: "password1"},
+			{Service: "Facebook", Username: "user2", Password: "password2"},
+			{Service: "Instagram", Username: "user3", Password: "password3"},
+		}
 	}
 
-	p := tea.NewProgram(model)
+	p := tea.NewProgram(MainModel)
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}
+	defer file.Close()
 }
