@@ -49,6 +49,7 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ShowPasswordsModel = updatedModel.(ShowPasswordsModel)
 		case AddPassword:
 			cmd = nil
+			log.Println("AddPassword")
 			return m.AddPasswordModel.Update(msg)
 			// var updatedModel tea.Model
 			// updatedModel, cmd = m.AddPasswordModel.Update(msg)
