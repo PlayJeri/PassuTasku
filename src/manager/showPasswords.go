@@ -30,6 +30,6 @@ func (m ShowPasswordsModel) View() string {
 		s += "  Password: " + p.Password + "\n\n"
 	}
 
-	s += "Press q to quit."
+	s += "Press esc or ctrl + c to quit."
 	return s
 }
