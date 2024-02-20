@@ -27,21 +27,6 @@ func (m MainModel) Init() tea.Cmd {
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "1":
-			m.State = ShowPasswords
-		case "2":
-			m.State = AddPassword
-		case "esc", "ctrl+c":
-			return m, tea.Quit
-		}
-	case NewPasswordMessage:
-		m.ShowPasswordsModel.Passwords = append(m.ShowPasswordsModel.Passwords, msg.entry)
-		SaveFile(m.ShowPasswordsModel.Passwords)
-		m.State = ShowPasswords
-	}
 	switch m.State {
 	case ShowPasswords:
 		var updatedModel tea.Model
@@ -51,6 +36,26 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var updatedModel tea.Model
 		updatedModel, cmd = m.AddPasswordModel.Update(msg)
 		m.AddPasswordModel = updatedModel.(AddPasswordModel)
+	}
+
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "esc":
+			m.State = ShowPasswords
+		case "a":
+			m.State = AddPassword
+		case "ctrl+c":
+			return m, tea.Quit
+		}
+
+	case NewPasswordMessage:
+		m.ShowPasswordsModel.Passwords = append(m.ShowPasswordsModel.Passwords, msg.entry)
+		SaveFile(m.ShowPasswordsModel.Passwords)
+		m.State = ShowPasswords
+
+	case CancelMessage:
+		m.State = ShowPasswords
 	}
 
 	return m, cmd
