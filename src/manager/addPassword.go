@@ -1,13 +1,19 @@
 package manager
 
 import (
+	"log"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
+
+	"github.com/playjeri/passutasku/src/utils"
 )
 
 type NewPasswordMessage struct {
 	entry PasswordEntry
 }
+
+type CancelMessage struct{}
 
 type AddPasswordModel struct {
 	form *huh.Form // huh.Form is just a tea.Model
@@ -16,6 +22,7 @@ type AddPasswordModel struct {
 var service string
 var username string
 var password string
+var confirm bool
 
 func NewModel() AddPasswordModel {
 	return AddPasswordModel{
@@ -36,6 +43,12 @@ func NewModel() AddPasswordModel {
 					Password(true).
 					Value(&password).
 					Prompt("?"),
+
+				huh.NewConfirm().
+					Title("Save the password?").
+					Affirmative("Yes").
+					Negative("No").
+					Value(&confirm),
 			),
 		),
 	}
@@ -56,14 +69,26 @@ func (m AddPasswordModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if m.form.State == huh.StateCompleted {
-		// Quit when the form is done.
-		return m, func() tea.Msg {
-			return NewPasswordMessage{entry: PasswordEntry{
-				Service:  service,
-				Username: username,
-				Password: password,
-			}}
+		if !confirm {
+			log.Println("not saving")
+			service, username, password, confirm = "", "", "", false
+			m = NewModel()
+			m.Init()
+			return m, utils.TeaMessage(CancelMessage{})
 		}
+
+		entry := PasswordEntry{
+			Service:  service,
+			Username: username,
+			Password: password,
+		}
+
+		// Reset the form
+		service, username, password, confirm = "", "", "", false
+		m = NewModel()
+		m.Init()
+
+		return m, utils.TeaMessage(NewPasswordMessage{entry})
 	}
 
 	return m, tea.Batch(cmds...)
