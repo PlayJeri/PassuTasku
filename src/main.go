@@ -16,6 +16,7 @@ func main() {
 
 	file := m.OpenLogFile()
 	log.SetOutput(file)
+	defer file.Close()
 
 	data := m.LoadFile()
 	MainModel := m.MainModel{
@@ -27,7 +28,6 @@ func main() {
 	}
 
 	if len(MainModel.ShowPasswordsModel.Passwords) == 0 {
-		os.Exit(1)
 		MainModel.ShowPasswordsModel.Passwords = []m.PasswordEntry{
 			{Service: "Twitter", Username: "user1", Password: "password1"},
 			{Service: "Facebook", Username: "user2", Password: "password2"},
@@ -37,7 +37,7 @@ func main() {
 
 	p := tea.NewProgram(MainModel)
 	if _, err := p.Run(); err != nil {
+		log.Println(err)
 		os.Exit(1)
 	}
-	defer file.Close()
 }
